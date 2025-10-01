@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -46,16 +46,23 @@ export class HomeComponent implements AfterViewInit {
 
       this.startMessageRotation();
     }, 0);
+
+    // ✅ Add passive touchmove listener
+    document.addEventListener(
+      'touchmove',
+      (event: TouchEvent) => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        this.updateSpotlight(touch.clientX, touch.clientY);
+      },
+      { passive: true } // <-- passive listener
+    );
   }
 
+  // ✅ Mouse move for spotlight
+  @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     this.updateSpotlight(event.clientX, event.clientY);
-  }
-
-  onTouchMove(event: TouchEvent) {
-    const touch = event.touches[0];
-    if (!touch) return;
-    this.updateSpotlight(touch.clientX, touch.clientY);
   }
 
   private updateSpotlight(x: number, y: number) {
