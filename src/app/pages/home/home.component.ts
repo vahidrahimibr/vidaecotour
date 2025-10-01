@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'; // ✅ Import Angular animations
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 
@@ -7,6 +8,16 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
   styleUrls: ['./home.component.scss'],
   standalone: true,
   imports: [CommonModule],
+  animations: [
+    // ✅ Define fade animation
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms ease-in', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('500ms ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class HomeComponent implements AfterViewInit {
   @ViewChild('bgVideo') video!: ElementRef<HTMLVideoElement>;
@@ -47,7 +58,7 @@ export class HomeComponent implements AfterViewInit {
       this.startMessageRotation();
     }, 0);
 
-    // ✅ Add passive touchmove listener
+    // Passive touchmove listener
     document.addEventListener(
       'touchmove',
       (event: TouchEvent) => {
@@ -55,11 +66,10 @@ export class HomeComponent implements AfterViewInit {
         if (!touch) return;
         this.updateSpotlight(touch.clientX, touch.clientY);
       },
-      { passive: true } // <-- passive listener
+      { passive: true }
     );
   }
 
-  // ✅ Mouse move for spotlight
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     this.updateSpotlight(event.clientX, event.clientY);
@@ -68,10 +78,9 @@ export class HomeComponent implements AfterViewInit {
   private updateSpotlight(x: number, y: number) {
     this.spotlightGradient = `
       radial-gradient(circle at ${x}px ${y}px,
-        rgba(255,255,255,0.25) 0%,
-        rgba(255,255,255,0.05) 40%,
-        rgba(0,0,0,0.95) 80%)
-    `;
+      rgba(255,255,255,0.25) 0%,
+      rgba(255,255,255,0.05) 40%,
+      rgba(0,0,0,0.95) 80%)`;
   }
 
   onScreenTap() {
@@ -79,24 +88,15 @@ export class HomeComponent implements AfterViewInit {
   }
 
   private nextMessage() {
-    const titleEl = document.querySelector('.overlay-container .title .fade-text') as HTMLElement;
-    const descEl = document.querySelector(
-      '.overlay-container .description .fade-text'
-    ) as HTMLElement;
+    // Rotate message with fade
+    this.messageVisible = false; // triggers :leave animation
 
-    if (titleEl && descEl) {
-      titleEl.style.opacity = '0';
-      descEl.style.opacity = '0';
-
-      setTimeout(() => {
-        this.messageIndex = (this.messageIndex + 1) % this.messages.length;
-        this.currentTitle = this.messages[this.messageIndex].title;
-        this.currentDescription = this.messages[this.messageIndex].desc;
-
-        titleEl.style.opacity = '1';
-        descEl.style.opacity = '1';
-      }, this.fadeDuration);
-    }
+    setTimeout(() => {
+      this.messageIndex = (this.messageIndex + 1) % this.messages.length;
+      this.currentTitle = this.messages[this.messageIndex].title;
+      this.currentDescription = this.messages[this.messageIndex].desc;
+      this.messageVisible = true; // triggers :enter animation
+    }, this.fadeDuration);
   }
 
   private startMessageRotation() {

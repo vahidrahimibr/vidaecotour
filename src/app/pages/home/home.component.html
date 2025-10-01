@@ -19,12 +19,13 @@
 
   <!-- Hero Content -->
   <div class="overlay-container" [class.visible]="messageVisible">
-    <h1 class="title">
-      <span class="fade-text">{{ currentTitle }}</span>
+    <h1 class="title" *ngIf="messageVisible" [@fade]>
+      {{ currentTitle }}
     </h1>
-    <p class="description">
-      <span class="fade-text">{{ currentDescription }}</span>
+    <p class="description" *ngIf="messageVisible" [@fade]>
+      {{ currentDescription }}
     </p>
+
     <div class="cta-buttons">
       <button class="btn primary" aria-label="Discover Destinations">Discover Destinations</button>
       <button class="btn secondary" aria-label="Plan Your Trip">Plan Your Trip</button>

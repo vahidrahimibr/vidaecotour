@@ -40,23 +40,12 @@ html, body {
     text-align: center;
     color: #fff;
     text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
-    opacity: 0;
-    transition: opacity 1.2s ease, transform 1.2s ease;
-
-    &.visible {
-      opacity: 1;
-      transform: translate(-50%, -50%);
-    }
 
     .title, .description {
       margin: 0;
     }
 
-    .fade-text {
-      display: inline-block;
-      transition: opacity 0.5s ease;
-    }
-
+    // ✅ Remove old fade-text class — Angular animations handle opacity now
     .title { font-size: 4vw; margin-bottom: 0.5rem; }
     .description { font-size: 2vw; }
   }
