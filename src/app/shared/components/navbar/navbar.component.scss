@@ -1,0 +1,60 @@
+/* Base layout styles */
+.main {
+  background-color: #fff;
+  color: #333;
+}
+
+.auth {
+  background-color: #222;
+  color: #fff;
+}
+
+/* Page-specific tweaks */
+.navbar-home {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.navbar-about {
+  background-color: #e0f7fa;
+  color: #006064;
+}
+
+.navbar-contact {
+  background-color: #ffecb3;
+  color: #bf360c;
+}
+
+.navbar-auth {
+  background-color: transparent;
+  color: #fff;
+}
+/* Navbar list and link base styles */
+ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+ul li a {
+  text-decoration: none;
+  color: inherit; /* inherit text color from parent (depends on layout/cssClass) */
+  font-weight: 500;
+  transition: color 0.2s ease, border-bottom 0.2s ease;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+/* Highlight the active page */
+ul li a.active {
+  color: #00796b; /* default highlight color */
+  border-bottom: 2px solid #00796b;
+  font-weight: 600;
+}
+
+/* Optional hover effect */
+ul li a:hover {
+  color: #009688;
+  border-bottom: 2px solid #009688;
+}

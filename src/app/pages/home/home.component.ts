@@ -4,10 +4,11 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+
   standalone: true,
   imports: [CommonModule],
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
   animations: [
     // ✅ Define fade animation
     trigger('fade', [

@@ -1,1 +1,15 @@
-<p>navbar works!</p>
+<nav [ngClass]="[layout, config.cssClass ?? '']">
+  <div class="navbar-title">{{ config.title }}</div>
+
+  <ul *ngIf="layout === 'main' && config.showMenu">
+    <li *ngFor="let item of config.menuItems">
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        {{ item.label }}
+      </a>
+    </li>
+  </ul>
+</nav>
