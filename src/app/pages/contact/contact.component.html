@@ -1,1 +1,33 @@
-<p>contact works!</p>
+<div class="contact-container">
+  <h2>Contact Us</h2>
+  <form [formGroup]="contactForm" (ngSubmit)="submitForm()">
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="Your name" />
+      <mat-error *ngIf="name?.touched && name?.invalid">
+        <span *ngIf="name?.errors?.['required']">Name is required</span>
+        <span *ngIf="name?.errors?.['minlength']">Minimum 2 characters</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="Your email" />
+      <mat-error *ngIf="email?.touched && email?.invalid">
+        <span *ngIf="email?.errors?.['required']">Email is required</span>
+        <span *ngIf="email?.errors?.['email']">Enter a valid email</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" rows="5" placeholder="Your message"></textarea>
+      <mat-error *ngIf="message?.touched && message!.invalid">
+        <span *ngIf="message!.errors?.['required']">Message is required</span>
+        <span *ngIf="message!.errors?.['minlength']">Minimum 10 characters</span>
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Send</button>
+  </form>
+</div>

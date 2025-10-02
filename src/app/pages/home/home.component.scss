@@ -33,57 +33,65 @@ html, body {
   }
 
   .overlay-container {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -60%);
-    z-index: 3;
-    text-align: center;
-    color: #fff;
-    text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); // center perfectly
+  z-index: 3;
+  text-align: center;
+  color: #fff;
+  text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
+  max-width: 90%; // prevent overflowing on small screens
 
-    .title, .description {
-      margin: 0;
-    }
-
-    // ✅ Remove old fade-text class — Angular animations handle opacity now
-    .title { font-size: 4vw; margin-bottom: 0.5rem; }
-    .description { font-size: 2vw; }
+  .title { 
+    font-size: clamp(2rem, 4vw, 4rem); // responsive but bounded
+    margin-bottom: 0.5rem; 
   }
+  .description { 
+    font-size: clamp(1rem, 2vw, 2rem); 
+  }
+}
+
 
   .cta-buttons {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
+  margin-top: 2rem; // a bit more spacing
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap; // allows wrapping on small screens
+  justify-content: center;
 
-    .btn {
-      padding: 0.8rem 1.5rem;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+  .btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap; // prevent text wrapping inside button
 
-      &.primary {
-        background: #ffcc00;
-        color: #000;
-        font-weight: bold;
-        &:hover { background: #e6b800; }
-      }
-
-      &.secondary {
-        background: rgba(255, 255, 255, 0.2);
-        color: #fff;
-        border: 1px solid #fff;
-        &:hover { background: rgba(255, 255, 255, 0.4); }
-      }
+    &.primary {
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      &:hover { background: #e6b800; }
+    }
+    &.secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid #fff;
+      &:hover { background: rgba(255, 255, 255, 0.4); }
     }
   }
 }
 
-/* Responsive adjustments */
+}
+
 @media (max-width: 768px) {
-  .overlay-container .title { font-size: 6vw; }
-  .overlay-container .description { font-size: 3.5vw; }
-  .cta-buttons .btn { font-size: 0.9rem; padding: 0.6rem 1.2rem; }
+  .overlay-container {
+    max-width: 95%;
+  }
+
+  .cta-buttons {
+    gap: 0.5rem;
+  }
 }
