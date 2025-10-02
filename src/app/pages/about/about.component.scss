@@ -1,0 +1,171 @@
+/* Hero Section */
+.about-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* full viewport height */
+  overflow: hidden;
+
+  .hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    color: white;
+    text-align: center;
+    padding: 0 1rem;
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    p {
+      font-size: 1.5rem;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  /* Optional semi-transparent overlay for readability */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3); /* adjust darkness */
+    z-index: 1;
+  }
+}
+
+/* About Text */
+.about-content {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  text-align: center;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+}
+
+/* Highlights Cards */
+.about-highlights {
+  text-align: center;
+  padding: 2rem 1rem;
+
+  h2 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .highlight-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .highlight-card {
+    width: 300px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+
+    mat-card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    mat-card-title {
+      text-align: center;
+    }
+
+    mat-card-content {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+/* CTA Section */
+.about-cta {
+  text-align: center;
+  margin: 3rem 1rem;
+
+  p {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    font-weight: bold;
+    padding: 0.75rem 2rem;
+  }
+}
+
+/* Contact Info Section */
+.about-contact {
+  text-align: center;
+  margin: 3rem 1rem;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .social-links {
+    margin-top: 1rem;
+    a {
+      margin: 0 0.5rem;
+      color: #1e88e5;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .highlight-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about-hero .hero-text h1 {
+    font-size: 2rem;
+  }
+  .about-hero .hero-text p {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,10 @@
+/* main-layout.component.scss and auth-layout.component.scss */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* full viewport height */
+}
+
+router-outlet {
+  flex: 1; /* takes all available space */
+}
