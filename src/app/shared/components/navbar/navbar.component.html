@@ -1,15 +1,30 @@
-<nav *ngIf="config.showMenu" [ngClass]="[layout, config.cssClass ?? '']">
-  <div class="navbar-title">{{ config.title }}</div>
+<mat-toolbar *ngIf="config.showMenu" [ngClass]="[config.cssClass, 'mat-elevation-z4']">
+  <span class="navbar-title">{{ config.title }}</span>
 
-  <ul *ngIf="layout === 'main' && config.menuItems?.length">
-    <li *ngFor="let item of config.menuItems">
-      <a
-        [routerLink]="item.path"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
+  <span class="spacer"></span>
+
+  <!-- Desktop menu -->
+  <ng-container class="desktop-menu" *ngIf="layout === 'main' && config.menuItems?.length">
+    <button
+      mat-button
+      *ngFor="let item of config.menuItems"
+      [routerLink]="item.path"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      {{ item.label }}
+    </button>
+  </ng-container>
+
+  <!-- Mobile menu -->
+  <ng-container class="mobile-menu" *ngIf="layout === 'main' && config.menuItems?.length">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngFor="let item of config.menuItems" [routerLink]="item.path">
         {{ item.label }}
-      </a>
-    </li>
-  </ul>
-</nav>
+      </button>
+    </mat-menu>
+  </ng-container>
+</mat-toolbar>
