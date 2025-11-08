@@ -19,10 +19,10 @@
 
   <!-- Hero Content -->
   <div class="overlay-container" [class.visible]="messageVisible">
-    <h1 class="title" *ngIf="messageVisible" [@fade]>
+    <h1 class="title" *ngIf="messageVisible" [@fade] [attr.data-key]="currentTitle">
       {{ currentTitle }}
     </h1>
-    <p class="description" *ngIf="messageVisible" [@fade]>
+    <p class="description" *ngIf="messageVisible" [@fade] [attr.data-key]="currentDescription">
       {{ currentDescription }}
     </p>
 

@@ -1,0 +1,101 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-container">
+  <!-- SECTION 1: Type of Person -->
+  <div class="section-label">Type of Person</div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Select</mat-label>
+    <mat-select formControlName="personType" required>
+      <mat-option value="Natural Person">Natural Person</mat-option>
+      <mat-option value="Legal Person">Legal Person</mat-option>
+    </mat-select>
+    <mat-error
+      *ngIf="form.get('personType')?.touched && form.get('personType')?.hasError('required')"
+    >
+      This field is required.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- SECTION 2: Region Type (only show if personType is chosen) -->
+  <div *ngIf="form.get('personType')?.value" class="radio-section">
+    <div class="section-label">Region Type</div>
+    <mat-radio-group formControlName="regionType">
+      <mat-radio-button value="National">National</mat-radio-button>
+      <mat-radio-button value="International">International</mat-radio-button>
+    </mat-radio-group>
+    <mat-error
+      *ngIf="form.get('regionType')?.touched && form.get('regionType')?.hasError('required')"
+    >
+      Please select region type.
+    </mat-error>
+  </div>
+
+  <!-- SECTION 3: Identification (only show after selecting both types) -->
+  <mat-form-field
+    *ngIf="form.get('personType')?.value && form.get('regionType')?.value"
+    appearance="outline"
+    class="full-width"
+  >
+    <mat-label>{{ identificationLabel }}</mat-label>
+    <input matInput formControlName="identification" required />
+    <mat-error
+      *ngIf="
+        form.get('identification')?.touched && form.get('identification')?.hasError('required')
+      "
+    >
+      {{ identificationLabel }} is required.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- SECTION 4: Contact Info -->
+  <div class="section-title">Contact Information</div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" type="email" required />
+    <mat-error *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')"
+      >Invalid email</mat-error
+    >
+    <mat-error *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')"
+      >Email is required</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Phone</mat-label>
+    <input matInput formControlName="phone" required />
+    <mat-error *ngIf="form.get('phone')?.touched && form.get('phone')?.hasError('required')"
+      >Phone is required</mat-error
+    >
+  </mat-form-field>
+
+  <!-- SECTION 5: Address -->
+  <div class="section-title">Address (Optional)</div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Country</mat-label>
+    <input type="text" matInput formControlName="country" [matAutocomplete]="autoCountry" />
+    <mat-autocomplete #autoCountry="matAutocomplete">
+      <mat-option *ngFor="let country of filteredCountries | async" [value]="country">{{
+        country
+      }}</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>City</mat-label>
+    <input type="text" matInput formControlName="city" [matAutocomplete]="autoCity" />
+    <mat-autocomplete #autoCity="matAutocomplete">
+      <mat-option *ngFor="let city of filteredCities | async" [value]="city">{{ city }}</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Address Line</mat-label>
+    <input matInput formControlName="address" placeholder="Street, number, etc." />
+  </mat-form-field>
+
+  <!-- SUBMIT BUTTON (Angular Material) -->
+  <button mat-raised-button color="primary" type="submit" class="submit-btn">
+    <mat-icon>arrow_forward</mat-icon>
+    Continue
+  </button>
+</form>

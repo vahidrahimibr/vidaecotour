@@ -1,0 +1,21 @@
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.date-row {
+  display: flex;
+  gap: 16px;
+}
+
+.button-row {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}

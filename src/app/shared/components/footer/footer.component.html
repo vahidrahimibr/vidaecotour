@@ -1,32 +1,42 @@
-<div *ngIf="footerConfig$ | async as config" [ngClass]="config.cssClass" class="app-footer">
-  <ng-container *ngIf="config.show !== false">
-    <!-- Footer text with HTML -->
-    <p *ngIf="config.text" [innerHTML]="config.text"></p>
-
-    <!-- Footer buttons -->
-    <div class="footer-buttons" *ngIf="config.buttons?.length">
-      <button
-        mat-raised-button
-        *ngFor="let btn of config.buttons"
-        [color]="btn.color"
-        [routerLink]="btn.path"
-      >
-        <mat-icon *ngIf="btn.icon">{{ btn.icon }}</mat-icon>
-        {{ btn.label }}
-      </button>
+@if (footerConfig$ | async; as config) {
+<div [ngClass]="config.cssClass" class="app-footer">
+  @if (config.show !== false) {
+  <div class="footer-wrapper">
+    <!-- LEFT SIDE -->
+    <div class="footer-left">
+      @if (config.text) {
+      <p [innerHTML]="config.text"></p>
+      } @if (config.buttons?.length) {
+      <div class="footer-buttons">
+        @for (btn of config.buttons; track btn) {
+        <button mat-raised-button [color]="btn.color" [routerLink]="btn.path">
+          @if (btn.icon) {
+          <mat-icon>{{ btn.icon }}</mat-icon>
+          }
+          {{ btn.label }}
+        </button>
+        }
+      </div>
+      } @if (config.social?.length) {
+      <div class="footer-social">
+        @for (s of config.social; track s) {
+        <a [href]="s.link" target="_blank" mat-icon-button [attr.aria-label]="s.label">
+          <fa-icon [icon]="s.icon"></fa-icon>
+        </a>
+        }
+      </div>
+      }
     </div>
 
-    <!-- Social media icons -->
-    <div class="footer-social" *ngIf="config.social?.length">
-      <a
-        *ngFor="let s of config.social"
-        [href]="s.link"
-        target="_blank"
-        mat-icon-button
-        [attr.aria-label]="s.label"
-      >
-        <fa-icon [icon]="s.icon"></fa-icon>
-      </a>
+    <!-- RIGHT SIDE -->
+    @if (config.cssClass === 'footer-about') {
+    <div class="footer-map">
+      <div class="footer-map-wrapper">
+        <app-map></app-map>
+      </div>
     </div>
-  </ng-container>
+    }
+  </div>
+  }
 </div>
+}

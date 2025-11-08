@@ -24,13 +24,7 @@ export interface FooterConfig {
 }
 
 // FontAwesome imports
-import {
-  faFacebook,
-  faInstagram,
-  faLinkedin,
-  faTwitter,
-  faWhatsapp,
-} from '@fortawesome/free-brands-svg-icons';
+import { faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 export const FOOTER_CONFIG: Record<string, FooterConfig> = {
   '/home': {
@@ -41,25 +35,27 @@ export const FOOTER_CONFIG: Record<string, FooterConfig> = {
       { label: 'About', path: '/about', color: 'accent' },
     ],
     social: [
-      { icon: faFacebook, link: '', label: 'Facebook' },
-      { icon: faTwitter, link: '', label: 'Twitter' },
-      { icon: faInstagram, link: 'https://www.instagram.com/vidaecotour/', label: 'Instagram' }, // ✅ updated
-      { icon: faLinkedin, link: '', label: 'LinkedIn' },
-      { icon: faWhatsapp, link: '', label: 'WhatsApp' },
+      // { icon: faFacebook, link: '', label: 'Facebook' },
+      //{ icon: faTwitter, link: '', label: 'Twitter' },
+      { icon: faInstagram, link: 'https://www.instagram.com/vidaecotour/', label: 'Instagram' },
+      //{ icon: faLinkedin, link: '', label: 'LinkedIn' },
+      { icon: faWhatsapp, link: 'https://wa.me/5551981745303', label: 'WhatsApp' },
     ],
   },
   '/about': {
     text: `
-    Get in Touch<br>
-    Email: <a href="mailto:info@vidaecotour.com">info@vidaecotour.com</a><br>
-    Phone: +55 51981745303<br>
-    São José do Hortêncio - RS, 95755-000
-  `,
+  Get in Touch<br>
+  Email: <a href="mailto:info@vidaecotour.com.br">info@vidaecotour.com.br</a><br>
+  Phone: <a href="tel:+5551981745303">+55 51 98174-5303</a><br>
+  Address: São José do Hortêncio - RS, 95755-000
+`,
     cssClass: 'footer-about',
     social: [
-      { icon: faFacebook, link: 'https://www.facebook.com', label: 'Facebook' },
+      // { icon: faFacebook, link: 'https://www.facebook.com', label: 'Facebook' },
       { icon: faInstagram, link: 'https://www.instagram.com/vidaecotour/', label: 'Instagram' },
-      { icon: faLinkedin, link: 'https://www.linkedin.com', label: 'LinkedIn' },
+      { icon: faWhatsapp, link: 'https://wa.me/5551981745303', label: 'WhatsApp' },
+
+      //{ icon: faLinkedin, link: 'https://www.linkedin.com', label: 'LinkedIn' },
     ],
   },
 

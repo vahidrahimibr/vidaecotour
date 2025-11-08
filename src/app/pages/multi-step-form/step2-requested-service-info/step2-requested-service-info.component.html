@@ -1,0 +1,88 @@
+<form [formGroup]="serviceForm" class="form-wrapper">
+  <!-- Service Type -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Select Service Type</mat-label>
+    <mat-select formControlName="serviceType">
+      <mat-option value="Tour">Tour</mat-option>
+      <mat-option value="Transfer">Transfer</mat-option>
+      <mat-option value="Package">Package</mat-option>
+      <mat-option value="Flights">Flights</mat-option>
+      <mat-option value="Other">Other</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- If Flights selected → show passengers & destinations -->
+  <div *ngIf="isFlightsSelected()">
+    <!-- Number of passengers -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Number of Passengers</mat-label>
+      <input matInput type="number" min="1" formControlName="numberOfPassengers" />
+    </mat-form-field>
+
+    <!-- Passengers type -->
+    <mat-radio-group formControlName="passengersType">
+      <mat-radio-button value="individual">Individual</mat-radio-button>
+      <mat-radio-button value="group">Group</mat-radio-button>
+    </mat-radio-group>
+
+    <!-- Number of destinations -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Number of Destinations</mat-label>
+      <input matInput type="number" min="1" formControlName="numberOfDestinations" />
+    </mat-form-field>
+  </div>
+
+  <!-- Destination -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Country</mat-label>
+    <input
+      type="text"
+      matInput
+      [matAutocomplete]="countryAuto"
+      formControlName="destinationCountry"
+      (blur)="onCountrySelected()"
+    />
+    <mat-autocomplete #countryAuto="matAutocomplete" (optionSelected)="onCountrySelected()">
+      <mat-option *ngFor="let option of filteredCountries | async" [value]="option">{{
+        option
+      }}</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>State</mat-label>
+    <input
+      type="text"
+      matInput
+      [matAutocomplete]="stateAuto"
+      formControlName="destinationState"
+      (blur)="onStateSelected()"
+    />
+    <mat-autocomplete #stateAuto="matAutocomplete" (optionSelected)="onStateSelected()">
+      <mat-option *ngFor="let s of filteredStates" [value]="s">{{ s }}</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>City</mat-label>
+    <input type="text" matInput [matAutocomplete]="cityAuto" formControlName="destinationCity" />
+    <mat-autocomplete #cityAuto="matAutocomplete">
+      <mat-option *ngFor="let c of filteredCities" [value]="c">{{ c }}</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <!-- Date & Time (start & end in one line) -->
+  <div class="date-row">
+    <mat-form-field appearance="fill">
+      <mat-label>Start & End Date & Time</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="startDate" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+  <!-- Next Step button -->
+  <div class="button-row">
+    <button mat-raised-button color="primary" (click)="nextStep()">Next Step</button>
+  </div>
+</form>

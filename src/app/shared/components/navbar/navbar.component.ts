@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter } from 'rxjs/operators';
-
-// Angular Material imports
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
-import { NAVBAR_CONFIG, NavbarConfig } from './navbar.config';
+import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { NavbarService } from '../../../services/core/services/navbar.service';
+import { NavbarConfig } from './navbar.config';
 
 @Component({
   selector: 'app-navbar',
@@ -25,34 +23,24 @@ import { NAVBAR_CONFIG, NavbarConfig } from './navbar.config';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   @Input() layout: 'main' | 'auth' = 'main';
 
-  currentRoute: string = '';
   config: NavbarConfig = { title: '', showMenu: false, cssClass: '', menuItems: [] };
+  private subscription!: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(private navbarService: NavbarService) {}
 
   ngOnInit() {
-    this.updateNavbar(this.router.url);
-
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.updateNavbar(event.urlAfterRedirects);
-      });
+    // Subscribe to reactive navbar updates
+    this.subscription = this.navbarService.navbarConfig$.subscribe((config) => {
+      this.config = config;
+    });
   }
 
-  private updateNavbar(route: string) {
-    const cleanRoute = route.endsWith('/') && route.length > 1 ? route.slice(0, -1) : route;
-    this.currentRoute = cleanRoute;
-
-    this.config = NAVBAR_CONFIG[cleanRoute] ?? {
-      title: '',
-      showMenu: false,
-      cssClass: '',
-      menuItems: [],
-    };
+  ngOnDestroy() {
+    // Prevent memory leaks
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
   getToolbarColor(): 'primary' | 'accent' | 'warn' | undefined {

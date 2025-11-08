@@ -1,4 +1,4 @@
-import { AsyncPipe, CommonModule, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,21 +12,21 @@ import {
   faWhatsapp,
 } from '@fortawesome/free-brands-svg-icons';
 import { Observable } from 'rxjs';
+import { MapComponent } from '../../../map/map.component';
 import { FooterService } from '../../../services/core/services/footer.service';
 import { FooterConfig } from './footer.config';
 @Component({
   selector: 'app-footer',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, // includes *ngIf, *ngFor, etc.
     RouterModule,
     MatButtonModule,
     MatIconModule,
-    NgIf,
-    NgFor,
     AsyncPipe,
     FontAwesomeModule,
-  ], // ✅ include here
+    MapComponent,
+  ],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })

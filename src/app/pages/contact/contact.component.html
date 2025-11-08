@@ -28,6 +28,13 @@
       </mat-error>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit">Send</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="contactForm.invalid || isSubmitting"
+    >
+      {{ isSubmitting ? 'Sending...' : 'Send' }}
+    </button>
   </form>
 </div>
