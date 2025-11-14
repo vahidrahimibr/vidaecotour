@@ -19,3 +19,70 @@
   display: flex;
   justify-content: flex-end;
 }
+/* Container layout */
+.dynamic-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Label */
+.dynamic-selector label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+/* Input field styling */
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Chip list styling */
+.mat-mdc-chip-listbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #fafafa;
+}
+
+/* Individual chip style */
+.mat-mdc-chip {
+  background-color: #e0f7fa;
+  color: #006064;
+  font-weight: 500;
+  border-radius: 16px;
+  transition: background-color 0.2s;
+}
+
+.mat-mdc-chip:hover {
+  background-color: #b2ebf2;
+}
+
+/* “Other” chip highlighting */
+.mat-mdc-chip.other-chip {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+/* Custom text input for “Other” field */
+.other-input {
+  margin-top: 0.5rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 280px;
+}
+
+/* Responsive adjustment */
+@media (max-width: 600px) {
+  .dynamic-selector {
+    gap: 0.75rem;
+  }
+}

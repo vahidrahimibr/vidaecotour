@@ -1,0 +1,32 @@
+<div class="wizard-container">
+  <!-- MATERIAL PROGRESS BAR -->
+  <mat-progress-bar mode="determinate" [value]="progressValue" color="primary"> </mat-progress-bar>
+
+  <!-- STEP INDICATORS -->
+  <div class="wizard-header">
+    <div
+      class="step-item"
+      [class.active]="currentStep === 1"
+      (click)="router.navigate(['/multi-step-form/step1'])"
+    >
+      <mat-icon>domain</mat-icon>
+      <span>Step 1</span>
+      <small>Agency Info</small>
+    </div>
+
+    <div
+      class="step-item"
+      [class.active]="currentStep === 2"
+      (click)="router.navigate(['/multi-step-form/step2'])"
+    >
+      <mat-icon>miscellaneous_services</mat-icon>
+      <span>Step 2</span>
+      <small>Service Info</small>
+    </div>
+  </div>
+
+  <!-- STEP CONTENT -->
+  <div class="wizard-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -1,88 +1,129 @@
-<form [formGroup]="serviceForm" class="form-wrapper">
-  <!-- Service Type -->
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Select Service Type</mat-label>
-    <mat-select formControlName="serviceType">
-      <mat-option value="Tour">Tour</mat-option>
-      <mat-option value="Transfer">Transfer</mat-option>
-      <mat-option value="Package">Package</mat-option>
-      <mat-option value="Flights">Flights</mat-option>
-      <mat-option value="Other">Other</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <!-- If Flights selected → show passengers & destinations -->
-  <div *ngIf="isFlightsSelected()">
-    <!-- Number of passengers -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Number of Passengers</mat-label>
-      <input matInput type="number" min="1" formControlName="numberOfPassengers" />
-    </mat-form-field>
-
-    <!-- Passengers type -->
-    <mat-radio-group formControlName="passengersType">
-      <mat-radio-button value="individual">Individual</mat-radio-button>
-      <mat-radio-button value="group">Group</mat-radio-button>
-    </mat-radio-group>
-
-    <!-- Number of destinations -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Number of Destinations</mat-label>
-      <input matInput type="number" min="1" formControlName="numberOfDestinations" />
-    </mat-form-field>
-  </div>
-
-  <!-- Destination -->
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Country</mat-label>
+<form [formGroup]="form">
+  <!-- Multi-service selector with autocomplete -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Requested Services</mat-label>
     <input
       type="text"
       matInput
-      [matAutocomplete]="countryAuto"
-      formControlName="destinationCountry"
-      (blur)="onCountrySelected()"
+      placeholder="Type or select services"
+      [formControl]="serviceInput"
+      [matAutocomplete]="autoServices"
+      (keydown.enter)="addServiceSelection(serviceInput.value ?? '')"
     />
-    <mat-autocomplete #countryAuto="matAutocomplete" (optionSelected)="onCountrySelected()">
-      <mat-option *ngFor="let option of filteredCountries | async" [value]="option">{{
-        option
-      }}</mat-option>
+    <mat-autocomplete
+      #autoServices="matAutocomplete"
+      (optionSelected)="addServiceSelection($event.option.value)"
+    >
+      <mat-option *ngFor="let type of filteredServices$ | async" [value]="type">
+        {{ type }}
+      </mat-option>
     </mat-autocomplete>
   </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>State</mat-label>
-    <input
-      type="text"
-      matInput
-      [matAutocomplete]="stateAuto"
-      formControlName="destinationState"
-      (blur)="onStateSelected()"
-    />
-    <mat-autocomplete #stateAuto="matAutocomplete" (optionSelected)="onStateSelected()">
-      <mat-option *ngFor="let s of filteredStates" [value]="s">{{ s }}</mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>City</mat-label>
-    <input type="text" matInput [matAutocomplete]="cityAuto" formControlName="destinationCity" />
-    <mat-autocomplete #cityAuto="matAutocomplete">
-      <mat-option *ngFor="let c of filteredCities" [value]="c">{{ c }}</mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-
-  <!-- Date & Time (start & end in one line) -->
-  <div class="date-row">
-    <mat-form-field appearance="fill">
-      <mat-label>Start & End Date & Time</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="startDate" />
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+  <!-- Show selected service chips -->
+  <mat-chip-listbox>
+    <mat-chip
+      *ngFor="let service of selectedServices"
+      color="primary"
+      selected
+      removable
+      (removed)="removeService(service)"
+    >
+      {{ service }}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+  </mat-chip-listbox>
+  <!-- Placeholder blocks for selected services -->
+  <div class="service-blocks">
+    <div *ngIf="selectedServices.includes('Flights')" class="service-placeholder">
+      ✈️ Flights section will appear here
+    </div>
+    <div *ngIf="selectedServices.includes('Transfer')" class="service-placeholder">
+      🚐 Transfer section will appear here
+    </div>
+    <div *ngIf="selectedServices.includes('Accommodation')" class="service-placeholder">
+      🏨 Accommodation section will appear here
+    </div>
+    <div *ngIf="selectedServices.includes('Package')" class="service-placeholder">
+      🎁 Package section will appear here
+    </div>
+    <div *ngIf="selectedServices.includes('Tour')" class="service-placeholder">
+      🌎 Tour section will appear here
+    </div>
   </div>
+  <!-- Dynamic Destination Hierarchy -->
+  <div formArrayName="destinations" class="destination-section">
+    <div
+      *ngFor="let dest of destinations.controls; let i = index"
+      [formGroupName]="i"
+      class="destination-block"
+    >
+      <!-- Country selection with autocomplete -->
+      <!-- Country selection with autocomplete + custom -->
+      <div class="country-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Country</mat-label>
+          <input
+            type="text"
+            matInput
+            placeholder="Type or select countries"
+            [formControlName]="'countryInput'"
+            [matAutocomplete]="autoCountry"
+            (keydown.enter)="addCountrySelection(dest.get('countryInput')?.value, i)"
+          />
+          <mat-autocomplete
+            #autoCountry="matAutocomplete"
+            (optionSelected)="addCountrySelection($event.option.value, i)"
+          >
+            <mat-option *ngFor="let country of filteredCountries$ | async" [value]="country">
+              {{ country }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-  <!-- Next Step button -->
-  <div class="button-row">
-    <button mat-raised-button color="primary" (click)="nextStep()">Next Step</button>
+        <!-- Selected countries as chips -->
+        <mat-chip-listbox>
+          <mat-chip
+            *ngFor="let country of dest.value.countries"
+            color="primary"
+            selected
+            removable
+            (removed)="removeCountry(country, i)"
+          >
+            {{ country }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
+      <!-- States selection (skip "Not listed") -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>State</mat-label>
+        <mat-select multiple formControlName="states">
+          <ng-container *ngFor="let country of dest.value.countries">
+            <ng-container *ngIf="country !== 'Not listed'">
+              <ng-container *ngFor="let state of getStates(country)">
+                <mat-option [value]="state">{{ state }}</mat-option>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Cities selection (skip "Not listed") -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>City</mat-label>
+        <mat-select multiple formControlName="cities">
+          <ng-container *ngFor="let country of dest.value.countries">
+            <ng-container *ngIf="country !== 'Not listed'">
+              <ng-container *ngFor="let state of dest.value.states">
+                <ng-container *ngFor="let city of getCities(country, state)">
+                  <mat-option [value]="city">{{ city }}</mat-option>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
+  <button mat-raised-button color="primary" (click)="onSubmit()">Next Step</button>
 </form>

@@ -27,8 +27,12 @@
     </p>
 
     <div class="cta-buttons">
-      <button class="btn primary" aria-label="Discover Destinations">Discover Destinations</button>
-      <button class="btn secondary" aria-label="Plan Your Trip">Plan Your Trip</button>
+      <button mat-raised-button color="primary">Discover Destinations</button>
+
+      <button mat-raised-button color="accent" (click)="onPlanTrip()" aria-label="Plan Your Trip">
+        <mat-icon>flight_takeoff</mat-icon>
+        Plan Your Trip
+      </button>
     </div>
   </div>
 </div>

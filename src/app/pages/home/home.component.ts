@@ -1,12 +1,15 @@
 import { animate, style, transition, trigger } from '@angular/animations'; // ✅ Import Angular animations
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
 
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   animations: [
@@ -21,6 +24,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
   ],
 })
 export class HomeComponent implements AfterViewInit {
+  constructor(private router: Router) {}
   @ViewChild('bgVideo') video!: ElementRef<HTMLVideoElement>;
 
   spotlightGradient =
@@ -38,7 +42,10 @@ export class HomeComponent implements AfterViewInit {
   ];
   private messageIndex = 0;
   private fadeDuration = 500; // ms
-
+  onPlanTrip(): void {
+    // Navigate to the start of the multi-step form
+    this.router.navigate(['/multi-step-form/step1']);
+  }
   ngAfterViewInit() {
     const vid = this.video.nativeElement;
     vid.muted = true;

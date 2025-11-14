@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-container">
+<form [formGroup]="form" class="form-container">
   <!-- SECTION 1: Type of Person -->
   <div class="section-label">Type of Person</div>
   <mat-form-field appearance="outline" class="full-width">
@@ -94,8 +94,8 @@
   </mat-form-field>
 
   <!-- SUBMIT BUTTON (Angular Material) -->
-  <button mat-raised-button color="primary" type="submit" class="submit-btn">
+  <button mat-raised-button color="primary" type="button" (click)="onNext()">
     <mat-icon>arrow_forward</mat-icon>
-    Continue
+    Next
   </button>
 </form>
