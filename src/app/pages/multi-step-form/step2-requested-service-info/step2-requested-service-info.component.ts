@@ -94,6 +94,10 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
 
   // Observable for filtered country names in autocomplete
   filteredCountries$!: Observable<string[]>;
+  // Observable for filtered state names in autocomplete
+  filteredStates$!: Observable<string[]>;
+  // Observable for filtered city names in autocomplete
+  filteredCities$!: Observable<string[]>;
 
   // All country names extracted from dataset
   allCountries: string[] = Object.keys(this.southAmerica);
@@ -103,17 +107,18 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       serviceTypes: [[], Validators.required],
-      destinations: this.fb.array([this.createDestinationGroup()]),
+      destinations: this.fb.array([this.createDestinationGroup()]), // Only one
     });
 
-    // Service autocomplete
+    // Initialize filters for the only destination block
+    this.initializeFilters(0);
+
+    // Service filter
     this.filteredServices$ = this.serviceInput.valueChanges.pipe(
       startWith(''),
-      map((value) => value ?? ''), // Ensure value is a string
+      map((value) => value ?? ''),
       map((value: string) => this.filterServices(value))
     );
-
-    this.initializeCountryFilter(0);
   }
 
   /** Filter service list by typed value */
@@ -126,15 +131,20 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
     return options;
   }
 
-  /** filter to show "Not listed" only if custom is OFF */
+  // Filter countries (show "Not listed" only if custom is OFF)
   filterCountries(value: string): string[] {
     const filterValue = value.toLowerCase();
-    let options = this.allCountries.filter((c) => c.toLowerCase().includes(filterValue));
+    const filtered = this.allCountries.filter((c) => c.toLowerCase().includes(filterValue));
 
-    if (!this.enableCustomCountry) {
-      options = options.concat(['Not listed']);
+    // Show "Not listed" only if we're not in custom mode
+    const dest = this.destinations.at(0) as FormGroup;
+    const enableCustom = dest?.get('enableCustomCountry')?.value;
+
+    if (!enableCustom) {
+      filtered.push('Not listed');
     }
-    return options;
+
+    return filtered;
   }
 
   /**
@@ -174,12 +184,8 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
 
   removeCountry(country: string, index: number): void {
     const dest = this.destinations.at(index) as FormGroup;
-    const selected: string[] = dest.value.countries || [];
-    const idx = selected.indexOf(country);
-    if (idx > -1) {
-      selected.splice(idx, 1);
-      dest.patchValue({ countries: selected });
-    }
+    const countries = (dest.value.countries || []).filter((c: string) => c !== country);
+    dest.patchValue({ countries });
   }
 
   /** Shortcut getter for selected services */
@@ -193,10 +199,17 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
       countries: [[]],
       states: [[]],
       cities: [[]],
-      countryInput: [''], // Only this input
+
+      countryInput: [''],
+      stateInput: [''],
+      cityInput: [''],
+
+      // Flags for custom mode
+      enableCustomState: [false],
+      enableCustomCity: [false],
+      enableCustomCountry: [false],
     });
   }
-
   /** Creates a *minimal* block that is used ONLY for custom countries */
 
   /** Returns destinations FormArray */
@@ -205,12 +218,31 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
   }
 
   /** Initializes the filtering observable for country autocomplete */
-  initializeCountryFilter(index: number): void {
+  initializeFilters(index: number): void {
     const dest = this.destinations.at(index) as FormGroup;
-    const inputControl = dest.get('countryInput') as FormControl;
-    this.filteredCountries$ = inputControl.valueChanges.pipe(
+
+    // Country filter
+    const countryCtrl = dest.get('countryInput') as FormControl;
+    this.filteredCountries$ = countryCtrl.valueChanges.pipe(
       startWith(''),
-      map((c: string) => this.filterCountries(c)) // Explicitly type c as string
+      map((v) => v ?? ''),
+      map((v) => this.filterCountries(v))
+    );
+
+    // State filter
+    const stateCtrl = dest.get('stateInput') as FormControl;
+    this.filteredStates$ = stateCtrl.valueChanges.pipe(
+      startWith(''),
+      map((v) => v ?? ''),
+      map((v) => this.filterStates(v, index))
+    );
+
+    // City
+    const cityCtrl = dest.get('cityInput') as FormControl;
+    this.filteredCities$ = cityCtrl.valueChanges.pipe(
+      startWith(''),
+      map((v) => v ?? ''),
+      map((v) => this.filterCities(v, index))
     );
   }
 
@@ -220,36 +252,27 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
    * @param index - index of destination block
    */
   /**
-   * Add a country to the selected list
+   * // Add country (with custom support)
    */
   addCountrySelection(country: string, index: number): void {
     const dest = this.destinations.at(index) as FormGroup;
-    const selected: string[] = dest.value.countries || [];
-    const trimmed = country.trim();
-
+    const trimmed = (country || '').trim();
     if (!trimmed) return;
 
     if (trimmed === 'Not listed') {
-      this.enableCustomCountry = true;
+      dest.patchValue({ enableCustomCountry: true });
       dest.get('countryInput')?.reset('');
       return;
     }
 
-    // Allow predefined OR custom (if enabled)
-    if (this.allCountries.includes(trimmed) || this.enableCustomCountry) {
-      if (!selected.includes(trimmed)) {
-        selected.push(trimmed);
-        dest.patchValue({ countries: selected });
-      }
-      dest.get('countryInput')?.reset('');
-      this.enableCustomCountry = false; // Reset after use
+    const countries = dest.value.countries || [];
+    if (!countries.includes(trimmed)) {
+      countries.push(trimmed);
+      dest.patchValue({ countries });
     }
-  }
-  /** Add a **full** destination block (real countries) */
-  addDestinationBlock(): void {
-    const newDest = this.createDestinationGroup();
-    this.destinations.push(newDest);
-    this.initializeCountryFilter(this.destinations.length - 1);
+
+    dest.get('countryInput')?.reset('');
+    dest.patchValue({ enableCustomCountry: false }); // Reset after use
   }
 
   /**
@@ -262,6 +285,57 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
     return Object.keys(this.southAmerica[country]?.states || {});
   }
 
+  filterStates(value: string, index: number): string[] {
+    const dest = this.destinations.at(index) as FormGroup;
+    const countries = dest.value.countries || [];
+    const enableCustom = dest.get('enableCustomState')?.value;
+
+    // Collect all states from selected real countries
+    const statesSet = new Set<string>();
+    for (const country of countries) {
+      if (this.allCountries.includes(country)) {
+        const countryStates = Object.keys(this.southAmerica[country]?.states || {});
+        countryStates.forEach((s) => statesSet.add(s));
+      }
+    }
+
+    const filtered = Array.from(statesSet).filter((s) =>
+      s.toLowerCase().includes(value.toLowerCase())
+    );
+
+    // Show "Not listed" only if custom mode is off
+    if (!enableCustom) {
+      filtered.push('Not listed');
+    }
+
+    return filtered;
+  }
+  addStateSelection(state: string, index: number): void {
+    const dest = this.destinations.at(index) as FormGroup;
+    const trimmed = (state || '').trim();
+    if (!trimmed) return;
+
+    if (trimmed === 'Not listed') {
+      dest.patchValue({ enableCustomState: true });
+      dest.get('stateInput')?.reset('');
+      return;
+    }
+
+    const states = dest.value.states || [];
+    if (!states.includes(trimmed)) {
+      states.push(trimmed);
+      dest.patchValue({ states });
+    }
+
+    dest.get('stateInput')?.reset('');
+    dest.patchValue({ enableCustomState: false });
+  }
+
+  removeState(state: string, index: number): void {
+    const dest = this.destinations.at(index) as FormGroup;
+    const states = (dest.value.states || []).filter((s: string) => s !== state);
+    dest.patchValue({ states });
+  }
   /**
    * Get cities for a country & state
    * @param country - selected country
@@ -272,7 +346,62 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
     if (!country || !state || country === 'Not listed' || state === 'Not listed') return [];
     return this.southAmerica[country]?.states[state] || [];
   }
+  filterCities(value: string, index: number): string[] {
+    const dest = this.destinations.at(index) as FormGroup;
+    const countries = dest.value.countries || [];
+    const states = dest.value.states || [];
+    const enableCustom = dest.get('enableCustomCity')?.value;
 
+    const citiesSet = new Set<string>();
+
+    for (const country of countries) {
+      if (!this.allCountries.includes(country)) continue;
+
+      const countryData = this.southAmerica[country];
+      if (!countryData) continue;
+
+      for (const state of states) {
+        const cityList = countryData.states[state] || [];
+        cityList.forEach((city: string) => citiesSet.add(city));
+      }
+    }
+
+    const filtered = Array.from(citiesSet).filter((c) =>
+      c.toLowerCase().includes(value.toLowerCase())
+    );
+
+    if (!enableCustom) {
+      filtered.push('Not listed');
+    }
+
+    return filtered;
+  }
+  addCitySelection(city: string, index: number): void {
+    const dest = this.destinations.at(index) as FormGroup;
+    const trimmed = (city || '').trim();
+    if (!trimmed) return;
+
+    if (trimmed === 'Not listed') {
+      dest.patchValue({ enableCustomCity: true });
+      dest.get('cityInput')?.reset('');
+      return;
+    }
+
+    const cities = dest.value.cities || [];
+    if (!cities.includes(trimmed)) {
+      cities.push(trimmed);
+      dest.patchValue({ cities });
+    }
+
+    dest.get('cityInput')?.reset('');
+    dest.patchValue({ enableCustomCity: false });
+  }
+
+  removeCity(city: string, index: number): void {
+    const dest = this.destinations.at(index) as FormGroup;
+    const cities = (dest.value.cities || []).filter((c: string) => c !== city);
+    dest.patchValue({ cities });
+  }
   /** Handle form submission */
   onSubmit(): void {
     console.log('Form Value:', this.form.value);

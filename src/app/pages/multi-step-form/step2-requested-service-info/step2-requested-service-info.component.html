@@ -57,15 +57,14 @@
       [formGroupName]="i"
       class="destination-block"
     >
-      <!-- Country selection with autocomplete -->
-      <!-- Country selection with autocomplete + custom -->
+      <!-- Country Input + Chips -->
       <div class="country-section">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Country</mat-label>
           <input
             type="text"
             matInput
-            placeholder="Type or select countries"
+            placeholder="Add countries"
             [formControlName]="'countryInput'"
             [matAutocomplete]="autoCountry"
             (keydown.enter)="addCountrySelection(dest.get('countryInput')?.value, i)"
@@ -74,56 +73,100 @@
             #autoCountry="matAutocomplete"
             (optionSelected)="addCountrySelection($event.option.value, i)"
           >
-            <mat-option *ngFor="let country of filteredCountries$ | async" [value]="country">
-              {{ country }}
+            <mat-option *ngFor="let c of filteredCountries$ | async" [value]="c">
+              {{ c }}
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
 
-        <!-- Selected countries as chips -->
+        <!-- Country Chips -->
         <mat-chip-listbox>
           <mat-chip
-            *ngFor="let country of dest.value.countries"
+            *ngFor="let c of dest.value.countries"
             color="primary"
             selected
             removable
-            (removed)="removeCountry(country, i)"
+            (removed)="removeCountry(c, i)"
           >
-            {{ country }}
+            {{ c }}
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip>
         </mat-chip-listbox>
       </div>
-      <!-- States selection (skip "Not listed") -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>State</mat-label>
-        <mat-select multiple formControlName="states">
-          <ng-container *ngFor="let country of dest.value.countries">
-            <ng-container *ngIf="country !== 'Not listed'">
-              <ng-container *ngFor="let state of getStates(country)">
-                <mat-option [value]="state">{{ state }}</mat-option>
-              </ng-container>
-            </ng-container>
-          </ng-container>
-        </mat-select>
-      </mat-form-field>
+      <!-- State Input + Chips (only show if countries exist) -->
+      <div class="state-section" *ngIf="dest.value.countries?.length > 0">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>State / Region</mat-label>
+          <input
+            type="text"
+            matInput
+            placeholder="Add states"
+            [formControlName]="'stateInput'"
+            [matAutocomplete]="autoState"
+            (keydown.enter)="addStateSelection(dest.get('stateInput')?.value, i)"
+          />
+          <mat-autocomplete
+            #autoState="matAutocomplete"
+            (optionSelected)="addStateSelection($event.option.value, i)"
+          >
+            <mat-option *ngFor="let s of filteredStates$ | async" [value]="s">
+              {{ s }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-chip-listbox>
+          <mat-chip
+            *ngFor="let s of dest.value.states"
+            color="accent"
+            selected
+            removable
+            (removed)="removeState(s, i)"
+          >
+            {{ s }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
 
       <!-- Cities selection (skip "Not listed") -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>City</mat-label>
-        <mat-select multiple formControlName="cities">
-          <ng-container *ngFor="let country of dest.value.countries">
-            <ng-container *ngIf="country !== 'Not listed'">
-              <ng-container *ngFor="let state of dest.value.states">
-                <ng-container *ngFor="let city of getCities(country, state)">
-                  <mat-option [value]="city">{{ city }}</mat-option>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-          </ng-container>
-        </mat-select>
-      </mat-form-field>
+      <!-- City Input + Chips (only show if states exist) -->
+      <div class="city-section" *ngIf="dest.value.states?.length > 0">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>City</mat-label>
+          <input
+            type="text"
+            matInput
+            placeholder="Add cities"
+            [formControlName]="'cityInput'"
+            [matAutocomplete]="autoCity"
+            (keydown.enter)="addCitySelection(dest.get('cityInput')?.value, i)"
+          />
+          <mat-autocomplete
+            #autoCity="matAutocomplete"
+            (optionSelected)="addCitySelection($event.option.value, i)"
+          >
+            <mat-option *ngFor="let c of filteredCities$ | async" [value]="c">
+              {{ c }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-chip-listbox>
+          <mat-chip
+            *ngFor="let c of dest.value.cities"
+            color="warn"
+            selected
+            removable
+            (removed)="removeCity(c, i)"
+          >
+            {{ c }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
     </div>
   </div>
+  <!-- Button to add another destination block -->
   <button mat-raised-button color="primary" (click)="onSubmit()">Next Step</button>
 </form>
