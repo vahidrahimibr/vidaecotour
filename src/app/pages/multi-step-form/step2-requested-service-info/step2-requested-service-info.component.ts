@@ -10,13 +10,18 @@ import {
 } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { Router } from '@angular/router';
 import { map, Observable, startWith } from 'rxjs';
-
+import { FilterCustomServicesPipe } from '../../../services/core/services/filter-custom-services.pipe';
+import { WizardStateService } from '../../../services/core/services/wizard-state.service';
 // Define type for South America data
 interface SouthAmericaData {
   [country: string]: {
@@ -39,6 +44,10 @@ interface SouthAmericaData {
     MatAutocompleteModule,
     MatChipsModule,
     MatIconModule,
+    FilterCustomServicesPipe,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCheckboxModule,
   ],
   templateUrl: './step2-requested-service-info.component.html',
   styleUrls: ['./step2-requested-service-info.component.scss'],
@@ -102,23 +111,42 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
   // All country names extracted from dataset
   allCountries: string[] = Object.keys(this.southAmerica);
 
-  constructor(private fb: FormBuilder) {}
-
+  constructor(
+    private fb: FormBuilder,
+    private wizard: WizardStateService,
+    private router: Router
+  ) {}
   ngOnInit(): void {
+    // 1. Build the form
     this.form = this.fb.group({
       serviceTypes: [[], Validators.required],
-      destinations: this.fb.array([this.createDestinationGroup()]), // Only one
+      destinations: this.fb.array([this.createDestinationGroup()]),
     });
 
-    // Initialize filters for the only destination block
+    // 2. LOAD SAVED DATA (if user came back or refreshed)
+    const savedData = this.wizard.getStep(2);
+    if (savedData) {
+      this.form.patchValue(savedData);
+    }
+
+    // 3. Initialize all filters (countries, states, cities + services)
     this.initializeFilters(0);
 
-    // Service filter
     this.filteredServices$ = this.serviceInput.valueChanges.pipe(
       startWith(''),
       map((value) => value ?? ''),
       map((value: string) => this.filterServices(value))
     );
+
+    // 4. AUTO-SAVE every time the form changes
+    this.form.valueChanges.subscribe((value) => {
+      this.wizard.updateStep(2, value);
+      this.wizard.saveToStorage(); // survives page refresh
+    });
+
+    // 5. Initial save (important for the header to know Step 2 has data)
+    this.wizard.updateStep(2, this.form.value);
+    this.wizard.saveToStorage();
   }
 
   /** Filter service list by typed value */
@@ -401,6 +429,26 @@ export class Step2RequestedServiceInfoComponent implements OnInit {
     const dest = this.destinations.at(index) as FormGroup;
     const cities = (dest.value.cities || []).filter((c: string) => c !== city);
     dest.patchValue({ cities });
+  }
+  goToPrevious(): void {
+    this.wizard.updateStep(2, this.form.value);
+    this.wizard.saveToStorage();
+    this.router.navigate(['/multi-step-form/step1']);
+  }
+
+  goToNextOrFinish(): void {
+    if (this.form.valid) {
+      this.wizard.updateStep(2, this.form.value);
+      this.wizard.saveToStorage();
+      alert(
+        'All done! Your request is ready.\n\nFull data:\n' +
+          JSON.stringify(this.wizard.getAllData(), null, 2)
+      );
+      // Later: go to step3 or send to backend
+    } else {
+      this.form.markAllAsTouched();
+      alert('Please complete all required fields first');
+    }
   }
   /** Handle form submission */
   onSubmit(): void {

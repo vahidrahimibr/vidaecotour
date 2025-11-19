@@ -1,55 +1,4 @@
 <form [formGroup]="form">
-  <!-- Multi-service selector with autocomplete -->
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Requested Services</mat-label>
-    <input
-      type="text"
-      matInput
-      placeholder="Type or select services"
-      [formControl]="serviceInput"
-      [matAutocomplete]="autoServices"
-      (keydown.enter)="addServiceSelection(serviceInput.value ?? '')"
-    />
-    <mat-autocomplete
-      #autoServices="matAutocomplete"
-      (optionSelected)="addServiceSelection($event.option.value)"
-    >
-      <mat-option *ngFor="let type of filteredServices$ | async" [value]="type">
-        {{ type }}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-  <!-- Show selected service chips -->
-  <mat-chip-listbox>
-    <mat-chip
-      *ngFor="let service of selectedServices"
-      color="primary"
-      selected
-      removable
-      (removed)="removeService(service)"
-    >
-      {{ service }}
-      <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
-  </mat-chip-listbox>
-  <!-- Placeholder blocks for selected services -->
-  <div class="service-blocks">
-    <div *ngIf="selectedServices.includes('Flights')" class="service-placeholder">
-      ✈️ Flights section will appear here
-    </div>
-    <div *ngIf="selectedServices.includes('Transfer')" class="service-placeholder">
-      🚐 Transfer section will appear here
-    </div>
-    <div *ngIf="selectedServices.includes('Accommodation')" class="service-placeholder">
-      🏨 Accommodation section will appear here
-    </div>
-    <div *ngIf="selectedServices.includes('Package')" class="service-placeholder">
-      🎁 Package section will appear here
-    </div>
-    <div *ngIf="selectedServices.includes('Tour')" class="service-placeholder">
-      🌎 Tour section will appear here
-    </div>
-  </div>
   <!-- Dynamic Destination Hierarchy -->
   <div formArrayName="destinations" class="destination-section">
     <div
@@ -167,6 +116,294 @@
       </div>
     </div>
   </div>
+  <!-- Multi-service selector with autocomplete -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Requested Services</mat-label>
+    <input
+      type="text"
+      matInput
+      placeholder="Type or select services"
+      [formControl]="serviceInput"
+      [matAutocomplete]="autoServices"
+      (keydown.enter)="addServiceSelection(serviceInput.value ?? '')"
+    />
+    <mat-autocomplete
+      #autoServices="matAutocomplete"
+      (optionSelected)="addServiceSelection($event.option.value)"
+    >
+      <mat-option *ngFor="let type of filteredServices$ | async" [value]="type">
+        {{ type }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <!-- Show selected service chips -->
+  <mat-chip-listbox>
+    <mat-chip
+      *ngFor="let service of selectedServices"
+      color="primary"
+      selected
+      removable
+      (removed)="removeService(service)"
+    >
+      {{ service }}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+  </mat-chip-listbox>
+  <!-- DYNAMIC SERVICE FORMS -->
+  <div class="service-forms-container">
+    <!-- Flights Form -->
+    <div *ngIf="selectedServices.includes('Flights')" class="service-form">
+      <h3>Flights Details</h3>
+      <div class="grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Departure City</mat-label>
+          <input matInput placeholder="e.g. São Paulo" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Preferred Airline</mat-label>
+          <input matInput placeholder="e.g. LATAM, GOL" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Number of Passengers</mat-label>
+          <input matInput type="number" min="1" value="1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Class</mat-label>
+          <mat-select>
+            <mat-option value="economy">Economy</mat-option>
+            <mat-option value="premium">Premium Economy</mat-option>
+            <mat-option value="business">Business</mat-option>
+            <mat-option value="first">First Class</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Tour Form -->
+    <div *ngIf="selectedServices.includes('Tour')" class="service-form">
+      <h3>Tour Details</h3>
+      <div class="grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Tour Type</mat-label>
+          <mat-select>
+            <mat-option value="adventure">Adventure</mat-option>
+            <mat-option value="cultural">Cultural</mat-option>
+            <mat-option value="beach">Beach / Relax</mat-option>
+            <mat-option value="ecotourism">Eco-tourism</mat-option>
+            <mat-option value="family">Family</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Duration (days)</mat-label>
+          <input matInput type="number" min="1" max="30" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Include Private Guide?</mat-label>
+          <mat-select>
+            <mat-option value="yes">Yes</mat-option>
+            <mat-option value="no">No, shared is fine</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Special Interests</mat-label>
+          <input matInput placeholder="e.g. photography, birdwatching, wine" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Accommodation Form -->
+    <div *ngIf="selectedServices.includes('Accommodation')" class="service-form">
+      <h3>Accommodation Details</h3>
+      <div class="grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Hotel Category</mat-label>
+          <mat-select>
+            <mat-option value="3star">3 Stars</mat-option>
+            <mat-option value="4star">4 Stars</mat-option>
+            <mat-option value="5star">5 Stars / Luxury</mat-option>
+            <mat-option value="boutique">Boutique / Charm</mat-option>
+            <mat-option value="hostel">Hostel / Budget</mat-option>
+            <mat-option value="apartment">Apartment / Airbnb</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Room Type</mat-label>
+          <mat-select>
+            <mat-option value="single">Single</mat-option>
+            <mat-option value="double">Double / Twin</mat-option>
+            <mat-option value="triple">Triple</mat-option>
+            <mat-option value="suite">Suite</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Check-in Date</mat-label>
+          <input matInput [matDatepicker]="checkin" />
+          <mat-datepicker-toggle matIconSuffix [for]="checkin"></mat-datepicker-toggle>
+          <mat-datepicker #checkin></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Check-out Date</mat-label>
+          <input matInput [matDatepicker]="checkout" />
+          <mat-datepicker-toggle matIconSuffix [for]="checkout"></mat-datepicker-toggle>
+          <mat-datepicker #checkout></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Number of Rooms</mat-label>
+          <input matInput type="number" min="1" value="1" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Meal Plan</mat-label>
+          <mat-select>
+            <mat-option value="roomonly">Room Only</mat-option>
+            <mat-option value="breakfast">Breakfast Included</mat-option>
+            <mat-option value="halfboard">Half Board (Breakfast + Dinner)</mat-option>
+            <mat-option value="fullboard">Full Board</mat-option>
+            <mat-option value="allinclusive">All Inclusive</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Special Requests</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          placeholder="e.g. sea view, high floor, connecting rooms, late check-out..."
+        ></textarea>
+      </mat-form-field>
+    </div>
+    <!-- Transfer Form -->
+    <div *ngIf="selectedServices.includes('Transfer')" class="service-form">
+      <h3>Transfer Details</h3>
+      <div class="grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Transfer Type</mat-label>
+          <mat-select>
+            <mat-option value="airport-hotel">Airport → Hotel (Arrival)</mat-option>
+            <mat-option value="hotel-airport">Hotel → Airport (Departure)</mat-option>
+            <mat-option value="both">Both (Round-trip)</mat-option>
+            <mat-option value="intercity">Between cities / hotels</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Vehicle Preference</mat-label>
+          <mat-select>
+            <mat-option value="standard">Standard Sedan (1–3 pax)</mat-option>
+            <mat-option value="van">Minivan (4–7 pax)</mat-option>
+            <mat-option value="luxury">Luxury Vehicle (Mercedes, etc.)</mat-option>
+            <mat-option value="suv">SUV 4x4</mat-option>
+            <mat-option value="bus">Minibus (8+ pax)</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Flight Number (Arrival)</mat-label>
+          <input matInput placeholder="e.g. LA1234" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Arrival Date & Time</mat-label>
+          <input matInput [matDatepicker]="arrivalDate" placeholder="Select date" />
+          <mat-datepicker-toggle matIconSuffix [for]="arrivalDate"></mat-datepicker-toggle>
+          <mat-datepicker #arrivalDate></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="grid-2">
+        <mat-checkbox>Meet & Greet with name sign</mat-checkbox>
+        <mat-checkbox>English-speaking driver</mat-checkbox>
+        <mat-checkbox>Child seat needed</mat-checkbox>
+        <mat-checkbox>Extra luggage space</mat-checkbox>
+      </div>
+    </div>
+    <!-- Package Form -->
+    <div *ngIf="selectedServices.includes('Package')" class="service-form">
+      <h3>Package Details</h3>
+      <div class="grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Package Type</mat-label>
+          <mat-select>
+            <mat-option value="honeymoon">Honeymoon</mat-option>
+            <mat-option value="family">Family Vacation</mat-option>
+            <mat-option value="adventure">Adventure / Trekking</mat-option>
+            <mat-option value="wellness">Wellness / Yoga Retreat</mat-option>
+            <mat-option value="luxury">Luxury Escape</mat-option>
+            <mat-option value="custom">Fully Custom Package</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Trip Duration (days)</mat-label>
+          <input matInput type="number" min="3" max="30" placeholder="e.g. 10" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Preferred Departure Month</mat-label>
+          <mat-select>
+            <mat-option value="jan">January</mat-option>
+            <mat-option value="feb">February</mat-option>
+            <mat-option value="mar">March</mat-option>
+            <mat-option value="apr">April</mat-option>
+            <mat-option value="may">May</mat-option>
+            <mat-option value="jun">June</mat-option>
+            <mat-option value="jul">July</mat-option>
+            <mat-option value="aug">August</mat-option>
+            <mat-option value="sep">September</mat-option>
+            <mat-option value="oct">October</mat-option>
+            <mat-option value="nov">November</mat-option>
+            <mat-option value="dec">December</mat-option>
+            <mat-option value="flexible">Flexible</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Budget per Person (USD)</mat-label>
+          <mat-select>
+            <mat-option value="under1500">Under $1,500</mat-option>
+            <mat-option value="1500-3000">$1,500 – $3,000</mat-option>
+            <mat-option value="3000-5000">$3,000 – $5,000</mat-option>
+            <mat-option value="5000-8000">$5,000 – $8,000</mat-option>
+            <mat-option value="8000plus">Above $8,000</mat-option>
+            <mat-option value="nobudget">No budget limit</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Anything specific you want included?</mat-label>
+        <textarea
+          matInput
+          rows="4"
+          placeholder="e.g. private villa, hot air balloon ride, wine tasting, helicopter transfer..."
+        ></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Custom Service (if user typed something not in the list) -->
+    <div *ngFor="let custom of selectedServices | filterCustomServices" class="service-form">
+      <h3>{{ custom }} Details</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Please describe your request</mat-label>
+        <textarea matInput rows="4" placeholder="Tell us more about this service..."></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+
   <!-- Button to add another destination block -->
-  <button mat-raised-button color="primary" (click)="onSubmit()">Next Step</button>
+  <div
+    class="wizard-actions"
+    style="margin-top: 40px; display: flex; justify-content: space-between; padding: 0 8px"
+  >
+    <button mat-stroked-button color="primary" (click)="goToPrevious()">← Previous</button>
+
+    <button mat-raised-button color="primary" (click)="goToNextOrFinish()">
+      Finish & Send Request →
+    </button>
+  </div>
 </form>

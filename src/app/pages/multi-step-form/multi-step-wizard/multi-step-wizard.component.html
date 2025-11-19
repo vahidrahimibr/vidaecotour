@@ -1,6 +1,6 @@
 <div class="wizard-container">
   <!-- MATERIAL PROGRESS BAR -->
-  <mat-progress-bar mode="determinate" [value]="progressValue" color="primary"> </mat-progress-bar>
+  <mat-progress-bar mode="determinate" [value]="progressValue" color="primary"></mat-progress-bar>
 
   <!-- STEP INDICATORS -->
   <div class="wizard-header">
@@ -17,7 +17,10 @@
     <div
       class="step-item"
       [class.active]="currentStep === 2"
-      (click)="router.navigate(['/multi-step-form/step2'])"
+      [class.disabled]="!canGoToStep(2)"
+      [style.opacity]="!canGoToStep(2) ? '0.5' : '1'"
+      [style.pointer-events]="!canGoToStep(2) ? 'none' : 'auto'"
+      (click)="canGoToStep(2) && router.navigate(['/multi-step-form/step2'])"
     >
       <mat-icon>miscellaneous_services</mat-icon>
       <span>Step 2</span>
